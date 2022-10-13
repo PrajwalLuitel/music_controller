@@ -1,16 +1,8 @@
 import React, { Component } from "react";
 import { TextField, Button, Grid, Typography } from "@material-ui/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-
-const withRouter = (WrappedComponent) => (props) => {
-  const navigate = useNavigate();
-
-  return <WrappedComponent {...props} navigate={navigate} />;
-};
-
-
-class RoomJoinPage extends Component {
+export default class RoomJoinPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,14 +25,13 @@ class RoomJoinPage extends Component {
           <TextField
             error={this.state.error}
             label="Code"
-            placeholder="Enter a room code"
+            placeholder="Enter a Room Code"
             value={this.state.roomCode}
             helperText={this.state.error}
             variant="outlined"
             onChange={this.handleTextFieldChange}
-          ></TextField>
+          />
         </Grid>
-
         <Grid item xs={12} align="center">
           <Button
             variant="contained"
@@ -50,7 +41,6 @@ class RoomJoinPage extends Component {
             Enter Room
           </Button>
         </Grid>
-
         <Grid item xs={12} align="center">
           <Button variant="contained" color="secondary" to="/" component={Link}>
             Back
@@ -67,22 +57,23 @@ class RoomJoinPage extends Component {
   }
 
   roomButtonPressed() {
-    const RequestOptions = {
+    const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         code: this.state.roomCode,
       }),
     };
-    fetch("/api/join-room", RequestOptions).then((response) => {
-      if (response.ok) {
-        this.props.navigate("/room/" + this.state.roomCode);
-      } else {
-        this.setState({ error : "Room Not Found"})
-      }
-    }).catch((error) => { console.log(error); });
+    fetch("/api/join-room", requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          this.props.history.push(`/room/${this.state.roomCode}`);
+        } else {
+          this.setState({ error: "Room not found." });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
-
-
-export default withRouter(RoomJoinPage);
